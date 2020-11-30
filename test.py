@@ -1,5 +1,5 @@
 import tensorflow as tf
-from keras.layers import Input, Dense, Reshape, Flatten
+from keras.layers import Input, Dense, Reshape, Flatten, Conv1D
 from keras.layers import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU, Softmax
 from keras.models import Sequential, Model
@@ -12,7 +12,6 @@ pass_shape = (charmap, pass_len)
 noise_shape = (100,)
 
 #Generator Model
-
 def Generator():
   model = Sequential()
   model.add(Flatten(input_shape=noise_shape))
@@ -28,20 +27,19 @@ def Generator():
   return Model(noise, passwords)
 
 #Discriminator Model
-
 def Discriminator():
     model = Sequential()
-
-    model.add(Flatten(input_shape=pass_shape))
+    model.add(Conv1D(filters=4, kernel_size=2, activation='relu', input_shape=(10, 1)))
     model.add(Dense(256))
     model.add(LeakyReLU(alpha=0.2))
+    model.add(Flatten())
     model.add(Dense(1, activation='sigmoid'))
     model.summary()
 
-    img = Input(shape=pass_shape)
-    validity = model(img)
+    intput_pass = Input(shape=(10, 1))
+    validity = model(intput_pass)
 
-    return Model(img, validity)
+    return Model(intput_pass, validity)
 
 #Testing
 generator = Generator()
@@ -49,9 +47,6 @@ discriminator = Discriminator()
 
 noise = np.random.normal(0, 1, (1, 100))
 gen_stuff = generator.predict(noise)
-
-discriminate = discriminator.predict(gen_stuff)
-print(discriminate)
 
 def softmax(logits, num_classes):
     return tf.reshape(
@@ -66,7 +61,12 @@ print(gen_stuff)
 sample = np.argmax(gen_stuff, axis=1)
 # sample2 = np.argmax(softmax(gen_stuff, 55), axis=1)
 
-print(np.sum(gen_stuff, axis=1))
+print(sample)
+
+discriminate = discriminator.predict(sample)
+print("output: " + str(discriminate))
+
+# print(np.sum(gen_stuff, axis=1))
 # print(np.sum(softmax(gen_stuff, 55), axis=1))
 
 password = ""
