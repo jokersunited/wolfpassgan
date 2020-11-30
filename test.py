@@ -15,7 +15,8 @@ noise_shape = (100,)
 
 def Generator():
   model = Sequential()
-  model.add(Dense(256, input_shape=noise_shape))
+  model.add(Flatten(input_shape=noise_shape))
+  model.add(Dense(256))
   model.add(Dense(np.prod(pass_shape), activation='tanh'))
   model.add(Reshape(pass_shape))
   model.summary()
