@@ -1,7 +1,7 @@
 import tensorflow as tf
 from keras.layers import Input, Dense, Reshape, Flatten
 from keras.layers import BatchNormalization
-from keras.layers.advanced_activations import LeakyReLU
+from keras.layers.advanced_activations import LeakyReLU, Softmax
 from keras.models import Sequential, Model
 import numpy as np
 
@@ -11,20 +11,45 @@ pass_shape = (charmap, pass_len)
 
 noise_shape = (100,)
 
-model = Sequential()
-model.add(Dense(256, input_shape=noise_shape))
-model.add(Dense(np.prod(pass_shape), activation='tanh'))
-model.add(Reshape(pass_shape))
-model.summary()
+#Generator Model
 
-noise = Input(shape=noise_shape)
-passwords = model(noise)
+def Generator():
+  model = Sequential()
+  model.add(Dense(256, input_shape=noise_shape))
+  model.add(Dense(np.prod(pass_shape), activation='tanh'))
+  model.add(Reshape(pass_shape))
+  model.summary()
 
-output = Model(noise, passwords)
+  noise = Input(shape=noise_shape)
+  passwords = model(noise)
 
-#Generation
+  return Model(noise, passwords)
+
+#Discriminator Model
+
+def Discriminator():
+    model = Sequential()
+
+    model.add(Flatten(input_shape=pass_shape))
+    model.add(Dense(256))
+    model.add(LeakyReLU(alpha=0.2))
+    model.add(Dense(1, activation='sigmoid'))
+    model.summary()
+
+    img = Input(shape=pass_shape)
+    validity = model(img)
+
+    return Model(img, validity)
+
+#Testing
+generator = Generator()
+discriminator = Discriminator()
+
 noise = np.random.normal(0, 1, (1, 100))
-gen_stuff = output.predict(noise)
+gen_stuff = generator.predict(noise)
+
+discriminate = discriminator.predict(gen_stuff)
+print(discriminate)
 
 def softmax(logits, num_classes):
     return tf.reshape(
