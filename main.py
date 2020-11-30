@@ -26,7 +26,6 @@ def Conversion(one_dim):
 def Generator():
   model = Sequential()
   model.add(Flatten(input_shape=noise_shape))
-  model.add(Dense(256))
   model.add(Dense(np.prod(pass_shape), activation='tanh'))
   model.add(Reshape(pass_shape))
   model.add(Softmax(axis=1))
@@ -40,7 +39,6 @@ def Generator():
 def Discriminator():
     model = Sequential()
     model.add(Conv1D(filters=5*pass_len, kernel_size=5, activation='relu', input_shape=(len(inv_charmap), 10)))
-    model.add(Dense(256))
     model.add(LeakyReLU(alpha=0.2))
     model.add(Flatten())
     model.add(Dense(1, activation='sigmoid'))
