@@ -10,7 +10,7 @@ from utils import *
 
 
 pass_len = 10
-good_list, charmap, inv_charmap = load_dataset("../10-million-password-list-top-1000000.txt", pass_len)
+good_list, charmap, inv_charmap = load_dataset("10-million-password-list-top-1000000.txt", pass_len)
 pass_shape = (len(inv_charmap), pass_len)
 
 noise_len = 100
