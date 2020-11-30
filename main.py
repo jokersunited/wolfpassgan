@@ -97,30 +97,30 @@ def training(epochs, batch_size, sample_interval):
     if epochs % sample_interval == 0:
       save(epochs)
 
-#Things for ipynb
-optimizer = Adam(0.0002, 0.5)
+# #Things for ipynb
+# optimizer = Adam(0.0002, 0.5)
 
-generator = Generator()
-generator.compile(loss='binary_crossentropy', optimizer=optimizer)
+# generator = Generator()
+# generator.compile(loss='binary_crossentropy', optimizer=optimizer)
 
-discriminator = Discriminator()
-discriminator.compile(loss='binary_crossentropy',
-    optimizer=optimizer,
-    metrics=['accuracy'])
+# discriminator = Discriminator()
+# discriminator.compile(loss='binary_crossentropy',
+#     optimizer=optimizer,
+#     metrics=['accuracy'])
 
-#Defining input for combined model
-z = Input(shape=noise_shape)
-gen_pass = generator(z)
+# #Defining input for combined model
+# z = Input(shape=noise_shape)
+# gen_pass = generator(z)
 
-discriminator.trainable = False
+# discriminator.trainable = False
 
-#Pass output of generator to discriminator in the combined model
-validity = discriminator(gen_pass)
+# #Pass output of generator to discriminator in the combined model
+# validity = discriminator(gen_pass)
 
-#Finalize the combined model
-combined = Model(z, validity)
-combined.compile(loss='binary_crossentropy', optimizer=optimizer)
+# #Finalize the combined model
+# combined = Model(z, validity)
+# combined.compile(loss='binary_crossentropy', optimizer=optimizer)
 
-noise = np.random.normal(0, 1, (1, 100))
+# noise = np.random.normal(0, 1, (1, 100))
 
-training(100, 128, 50)
+# training(100, 128, 50)
