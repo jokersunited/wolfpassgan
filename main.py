@@ -123,4 +123,4 @@ combined.compile(loss='binary_crossentropy', optimizer=optimizer)
 
 noise = np.random.normal(0, 1, (1, 100))
 
-training(1000, 24, 25)
+training(10000, 256, 500)
