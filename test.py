@@ -29,7 +29,7 @@ def Generator():
 #Discriminator Model
 def Discriminator():
     model = Sequential()
-    model.add(Conv1D(filters=4, kernel_size=2, activation='relu', input_shape=(10, 1)))
+    model.add(Conv1D(filters=100, kernel_size=3, activation='relu', input_shape=(10, 1)))
     model.add(Dense(256))
     model.add(LeakyReLU(alpha=0.2))
     model.add(Flatten())
@@ -69,11 +69,26 @@ print("output: " + str(discriminate))
 # print(np.sum(gen_stuff, axis=1))
 # print(np.sum(softmax(gen_stuff, 55), axis=1))
 
-password = ""
-password2 = ""
-for x in sample[0]:
-  password += chr(x+65)
-print(password)
+noise2 = np.random.normal(0, 1, (1000, 100))
+
+# Generate a half batch of fake images
+gen_imgs = generator.predict(noise2)
+print(gen_imgs)
+
+for gen in gen_imgs:
+  sample = np.argmax(gen, axis=0)
+  password = ""
+  for x in sample:
+      password += chr(x+65)
+  print(password)
+
+
+
+# password = ""
+# password2 = ""
+# for x in sample[0]:
+#   password += chr(x+65)
+# print(password)
 # for x in sample2[0]:
 #   password2 += chr(x+65)
 # print(password2)
