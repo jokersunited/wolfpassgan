@@ -17,10 +17,10 @@ kernel_size = 55
 
 def ResBlock(model):
     block = model
-    block.add(ReLU(10))
+    block.add(ReLU())
     # block = relu(block)
     block.add(Conv1D(filters=1, kernel_size=kernel_size, activation='relu', input_shape=(10, layer_dim), padding='same'))
-    block.add(ReLU(10))
+    block.add(ReLU())
     # block = relu(block)
     block.add(Conv1D(filters=1, kernel_size=kernel_size, activation='relu', input_shape=(10, layer_dim), padding='same'))
     # return multiply([model, block])
@@ -45,7 +45,7 @@ def Generator():
     model = ResBlock(model)
     model = ResBlock(model)
 
-    model.add(Conv1D(filters=10, kernel_size=kernel_size, activation='relu', input_shape=(10, 1), padding='same'))
+    model.add(Conv1D(filters=10, kernel_size=kernel_size, activation='relu', input_shape=(10, layer_dim), padding='same'))
     model.add(Softmax(axis=1))
     model.summary()
 
@@ -60,13 +60,13 @@ def Discriminator():
     model = Sequential()
     
     # model.add(Flatten(input_shape=pass_shape))
-    model.add(Conv1D(filters=1, kernel_size=10, activation='relu', input_shape=(10, 1), padding='same'))
+    model.add(Conv1D(filters=1, kernel_size=10, activation='relu', input_shape=(10, layer_dim), padding='same'))
     model = ResBlock(model)
     model = ResBlock(model)
     model = ResBlock(model)
     model = ResBlock(model)
     model = ResBlock(model)
-    # model.add(Reshape((10, 1)))
+    model.add(Reshape((10, layer_dim)))
     model = linear(model)
     
     # model.add(Dense(256))
