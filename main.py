@@ -3,8 +3,8 @@ from keras.layers import Input, Dense, Reshape, Flatten, Conv1D, Multiply, Permu
 from keras.layers import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU, Softmax
 from keras.models import Sequential, Model
-from keras.optimizers import Adam
-from keras.backend import argmax
+from keras.optimizers import Adam, RMSprop
+from keras.backend import argmax, mean
 import numpy as np
 from utils import *
 
@@ -128,15 +128,14 @@ def training(epochs, batch_size, sample_interval):
       save(epoch)
 
 #Things for ipynb
-optimizer = Adam(0.0002, 0.5)
-
+opt = RMSprop(lr=0.00005)
 generator = Generator(layer_dim)
-generator.compile(loss='binary_crossentropy', optimizer=optimizer)
+
+def wasserstein_loss(y_true, y_pred):
+    return mean(y_true * y_pred)
 
 discriminator = Discriminator(layer_dim)
-discriminator.compile(loss='binary_crossentropy',
-    optimizer=optimizer,
-    metrics=['accuracy'])
+discriminator.compile(loss=wasserstein_loss, optimizer=opt, metrics=['accuracy'])
 
 #Defining input for combined model
 z = Input(shape=noise_shape)
@@ -149,6 +148,7 @@ validity = discriminator(gen_pass)
 
 #Finalize the combined model
 combined = Model(z, validity)
-combined.compile(loss='binary_crossentropy', optimizer=optimizer)
+# combined.compile(loss='binary_crossentropy', optimizer=optimizer)
+combined.compile(loss=wasserstein_loss, optimizer=opt)
 
 training(1000, 64, 50)
