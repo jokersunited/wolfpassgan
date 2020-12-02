@@ -63,7 +63,8 @@ def Generator(dim):
 def Discriminator(dim):
     model = Sequential()
     model.add(Dense(128, input_shape=pass_shape))
-    model.add(Reshape((3, 32, 128)))
+    model.add(Flatten())
+    model.add(Reshape((1, 32, (len(inv_charmap) * 128 / 32))))
     model.add(Conv1D(dim, 32, 1, padding='valid'))
     model.summary()
     model.add(ResBlock(dim))
@@ -150,4 +151,4 @@ validity = discriminator(gen_pass)
 combined = Model(z, validity)
 combined.compile(loss='binary_crossentropy', optimizer=optimizer)
 
-training(100, 32, 10)
+training(1000, 64, 50)
