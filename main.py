@@ -64,7 +64,7 @@ def Discriminator(dim):
     model = Sequential()
     model.add(Dense(128, input_shape=pass_shape))
     model.add(Flatten())
-    model.add(Reshape((1, 32, (len(inv_charmap) * 128 / 32))))
+    model.add(Reshape((1, 32, int(len(inv_charmap) * 128 / 32))))
     model.add(Conv1D(dim, 32, 1, padding='valid'))
     model.summary()
     model.add(ResBlock(dim))
