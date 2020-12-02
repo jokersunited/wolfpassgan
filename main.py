@@ -4,7 +4,7 @@ from keras.layers import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU, Softmax
 from keras.models import Sequential, Model
 from keras.optimizers import Adam, RMSprop
-from keras.backend import argmax, mean
+from keras.backend import argmax, mean, clip
 import numpy as np
 from utils import *
 
@@ -22,15 +22,30 @@ def Conversion(one_dim):
     two_dim[one_dim[x]][x] = 1
   return two_dim
 
+# clip model weights to a given hypercube
+class ClipConstraint(Constraint):
+    # set clip value when initialized
+    def __init__(self, clip_value):
+        self.clip_value = clip_value
+
+    # clip model weights to hypercube
+    def __call__(self, weights):
+        return clip(weights, -self.clip_value, self.clip_value)
+
+    # get the config
+    def get_config(self):
+        return {'clip_value': self.clip_value}
+
+const = ClipConstraint(0.01)
 
 class ResBlock(tf.keras.Model):
     def __init__(self, dim):
         super(ResBlock, self).__init__()
         self.res_block = tf.keras.Sequential([
             tf.keras.layers.ReLU(True),
-            tf.keras.layers.Conv1D(dim, dim, 5, padding='same'),
+            tf.keras.layers.Conv1D(dim, dim, 5, padding='same', kernel_constraint=const),
             tf.keras.layers.ReLU(True),
-            tf.keras.layers.Conv1D(dim, dim, 5, padding='same'),
+            tf.keras.layers.Conv1D(dim, dim, 5, padding='same', kernel_constraint=const),
         ])
 
     def call(self, input, **kwargs):
