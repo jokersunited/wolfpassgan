@@ -5,6 +5,7 @@ from keras.layers.advanced_activations import LeakyReLU, Softmax
 from keras.models import Sequential, Model
 from keras.optimizers import Adam, RMSprop
 from keras.backend import argmax, mean, clip
+from keras.constraints import Constraint
 import numpy as np
 from utils import *
 
@@ -123,16 +124,16 @@ def training(epochs, batch_size, sample_interval):
     #   bad_list.append(sample)
 
     # bad_list = np.array(bad_list)
+    for i in range(0, 10):
+        #Take a random sample of the good batch to train
+        idx = np.random.randint(0, len(good_list), batch_size)
+        good_list_t = np.array(good_list)[idx]
+        good_list_t = np.array([Conversion(x) for x in good_list_t])
 
-    #Take a random sample of the good batch to train
-    idx = np.random.randint(0, len(good_list), batch_size)
-    good_list_t = np.array(good_list)[idx]
-    good_list_t = np.array([Conversion(x) for x in good_list_t])
-
-    #Train discriminator
-    d_loss_real = discriminator.train_on_batch(good_list_t, np.ones((batch_size, 1)))
-    d_loss_fake = discriminator.train_on_batch(gen_pass, np.zeros((batch_size, 1)))
-    d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
+        #Train discriminator
+        d_loss_real = discriminator.train_on_batch(good_list_t, np.ones((batch_size, 1)))
+        d_loss_fake = discriminator.train_on_batch(gen_pass, np.zeros((batch_size, 1)))
+        d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
     #Train generator
     noise = np.random.normal(0, 1, (batch_size, noise_len))
